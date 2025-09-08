@@ -52,7 +52,7 @@ class Batch extends Request{
     public function getBody() {
         return pack('C', $this->_batchType)
             . pack('n', count($this->_queryArray)) . implode('', $this->_queryArray)
-            . self::queryParameters($this->_consistency, $this->_options);
+            . self::queryParameters($this->_consistency, [], $this->_options);
     }
 
     /**
@@ -94,7 +94,7 @@ class Batch extends Request{
      * @param array $options
      * @return string
      */
-    public static function queryParameters($consistency, array $options = []){
+    public static function queryParameters($consistency, array $values = [], array $options = []){
         $flags = 0;
         $optional = '';
     
