@@ -34,80 +34,92 @@ class Error extends Response {
 
 		switch($data['code']){
 			case self::SERVER_ERROR:
-				$data['message'] = "Server error: " . $this->_stream->readString();
+				$data['message'] = 'Server Error: ' . $this->_stream->readString();
 				break;
 
 			case self::PROTOCOL_ERROR:
-				$data['message'] = "Protocol error: " . $this->_stream->readString();
+				$data['message'] = 'Protocol Error: ' . $this->_stream->readString();
 				break;
 
 			case self::BAD_CREDENTIALS:
-				$data['message'] = "Bad credentials: " . $this->_stream->readString();
+				$data['message'] = 'Bad Credentials: ' . $this->_stream->readString();
 				break;
 
 			case self::UNAVAILABLE_EXCEPTION:
-				$data['message'] = "Unavailable exception. Error data: " . var_export([
-                        'error'=>$this->_stream->readString(),
-                        'consistency' => $this->_stream->readShort(),
-                        'node' => $this->_stream->readInt(),
-						'replica' => $this->_stream->readInt()
-					], true);
+				/*
+				$error = var_export([
+					'error'=>$this->_stream->readString(),
+					'consistency' => $this->_stream->readShort(),
+					'node' => $this->_stream->readInt(),
+					'replica' => $this->_stream->readInt()
+				], true);
+				*/
+				$error = $this->_stream->readString();
+				$data['message'] = 'Unavailable exception: ' . $error;
 				break;
 
 			case self::OVERLOADED:
-				$data['message'] = "Overloaded: " . $this->_stream->readString();
+				$data['message'] = 'Overloaded: ' . $this->_stream->readString();
 				break;
 
 			case self::IS_BOOTSTRAPPING:
-				$data['message'] = "Is_bootstrapping: " . $this->_stream->readString();
+				$data['message'] = 'Is Bootstrapping: ' . $this->_stream->readString();
 				break;
 
 			case self::TRUNCATE_ERROR:
-				$data['message'] = "Truncate_error: " . $this->_stream->readString();
+				$data['message'] = 'Truncate Error: ' . $this->_stream->readString();
 				break;
 
 			case self::WRITE_TIMEOUT:
-				$data['message'] = "Write_timeout. Error data: " . var_export([
-                        'error'=>$this->_stream->readString(),
-                        'consistency' => $this->_stream->readShort(),
-						'node' => $this->_stream->readInt(),
-						'replica' => $this->_stream->readInt(),
-						'writeType' => $this->_stream->readString()
-					], true);
+				/*
+				$error = var_export([
+					'error'=>$this->_stream->readString(),
+					'consistency' => $this->_stream->readShort(),
+					'node' => $this->_stream->readInt(),
+					'replica' => $this->_stream->readInt(),
+					'writeType' => $this->_stream->readString()
+				], true);
+				*/
+				$error = $this->_stream->readString();
+				$data['message'] = 'Write Timeout: ' . $error;
 				break;
 
 			case self::READ_TIMEOUT:
-				$data['message'] = "Read_timeout. Error data: " . var_export([
-                        'error'=>$this->_stream->readString(),
-                        'consistency' => $this->_stream->readShort(),
-						'node' => $this->_stream->readInt(),
-						'replica' => $this->_stream->readInt(),
-						'dataPresent' => $this->_stream->readChar()
-					], true);
+				/*
+				$error = var_export([
+					'error'=>$this->_stream->readString(),
+					'consistency' => $this->_stream->readShort(),
+					'node' => $this->_stream->readInt(),
+					'replica' => $this->_stream->readInt(),
+					'dataPresent' => $this->_stream->readChar()
+				], true);
+				*/
+				$error = $this->_stream->readString();
+				$data['message'] = 'Read Timeout: ' . $error;
 				break;
 
 			case self::SYNTAX_ERROR:
-				$data['message'] = "Syntax_error: " . $this->_stream->readString();
+				$data['message'] = 'Syntax Error: ' . $this->_stream->readString();
 				break;
 
 			case self::UNAUTHORIZED:
-				$data['message'] = "Unauthorized: " . $this->_stream->readString();
+				$data['message'] = 'Unauthorized: ' . $this->_stream->readString();
 				break;
 
 			case self::INVALID:
-				$data['message'] = "Invalid: " . $this->_stream->readString();
+				$data['message'] = 'Invalid: ' . $this->_stream->readString();
 				break;
 
 			case self::CONFIG_ERROR:
-				$data['message'] = "Config_error: " . $this->_stream->readString();
+				$data['message'] = 'Config Error: ' . $this->_stream->readString();
 				break;
 
 			case self::ALREADY_EXIST:
-				$data['message'] = "Already_exists: " . $this->_stream->readString();
+				$data['message'] = 'Already Exists: ' . $this->_stream->readString();
 				break;
 
 			case self::UNPREPARED:
-				$data['message'] = "Unprepared: " . $this->_stream->readShort();
+				$data['message'] = 'Unprepared: ' . $this->_stream->readShort();
 				break;
 
 			default:
