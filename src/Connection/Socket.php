@@ -77,23 +77,35 @@ class Socket {
 	 * @return string
 	 */
 	public function read($length) {
-		$data = socket_read($this->_socket, $length);
-		
-		if ($data === false){
-			$errorCode = socket_last_error($this->_socket);
-			throw new SocketException(socket_strerror($errorCode), $errorCode);
+		$maxRetries = 100;
+		$retries = 0;
+
+		if ($length <= 0) {
+			return '';
 		}
-		
-		$remainder = $length - strlen($data);
-		
+
+		$data = '';
+		$remainder = $length;
+
 		while($remainder > 0) {
 			$readData = socket_read($this->_socket, $remainder);
 	
-			if ($readData === false){
+			if ($readData === false || $readData === '') {
 				$errorCode = socket_last_error($this->_socket);
+
+				// Retry on EINTR (4) Interrupted system call, as it's not a real error
+				if ($errorCode === SOCKET_EINTR || $errorCode === 4) {
+					if (++$retries > $maxRetries) {
+						throw new SocketException('Too many interrupted system calls', $errorCode);
+					}
+					// Clean up the error state
+					socket_clear_error($this->_socket);
+					continue;
+				}
+
 				throw new SocketException(socket_strerror($errorCode), $errorCode);
 			}
-			
+
 			$data .= $readData;
 			$remainder -= strlen($readData);
 		}
