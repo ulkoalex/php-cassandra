@@ -96,9 +96,9 @@ class Socket {
 				// Retry on EINTR (4) Interrupted system call, as it's not a real error
 				if ($errorCode === SOCKET_EINTR || $errorCode === 4) {
 					if (++$retries > $maxRetries) {
-						throw new SocketException('Too many interrupted system calls', $errorCode);
+						throw new SocketException('Too many interrupted system calls during read', $errorCode);
 					}
-					// Clean up the error state
+					// Clean up the error state & retry
 					socket_clear_error($this->_socket);
 					continue;
 				}
@@ -135,11 +135,25 @@ class Socket {
 	 * @throws SocketException
 	 */
 	public function write($binary){
+		$maxRetries = 100;
+		$retries = 0;
+
 		do{
 			$sentBytes = socket_write($this->_socket, $binary);
 			
-			if ($sentBytes === false){
+			if ($sentBytes === false || $sentBytes === 0){
 				$errorCode = socket_last_error($this->_socket);
+
+				// Retry on EINTR (4) Interrupted system call, as it's not a real error
+				if ($errorCode === SOCKET_EINTR || $errorCode === 4) {
+					if (++$retries > $maxRetries) {
+						throw new SocketException('Too many interrupted system calls during write', $errorCode);
+					}
+					// Clean up the error state & retry
+					socket_clear_error($this->_socket);
+					continue;
+				}
+
 				throw new SocketException(socket_strerror($errorCode), $errorCode);
 			}
 			$binary = substr($binary, $sentBytes);
